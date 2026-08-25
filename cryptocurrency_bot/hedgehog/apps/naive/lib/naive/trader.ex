@@ -31,9 +31,18 @@ defmodule Naive.Trader do
   @impl GenServer
   def handle_info(%TradeEvent{} = trade_event, %{buy_order: nil} = state) do
     %{price: price} = trade_event
-    symbol = state.symbol
-    price = calculate_buy_price(price, state.buy_down_interval, state.tick_size)
-    quantity = "100"
+
+    %{
+      budget: budget,
+      symbol: symbol,
+      tick_size: tick_size,
+      buy_down_interval: buy_down_interval,
+      step_size: step_size
+    } =
+      state
+
+    price = calculate_buy_price(price, buy_down_interval, tick_size)
+    quantity = calculate_quantity(budget, price, step_size)
 
     Logger.info("Placing BUY order for #{symbol} @ #{price}, quantity: #{quantity}")
 
@@ -140,7 +149,7 @@ defmodule Naive.Trader do
     exact_buy_price = D.sub(current_price, D.mult(current_price, buy_down_interval))
 
     exact_buy_price
-    |> D.div(tick_size)
+    |> D.div_int(tick_size)
     |> D.mult(tick_size)
     |> D.to_float()
   end
@@ -153,8 +162,16 @@ defmodule Naive.Trader do
     |> D.mult(fee)
     |> D.mult(D.add(D.new(1), profit_target))
     |> D.mult(fee)
-    |> D.div(tick_size)
+    |> D.div_int(tick_size)
     |> D.mult(tick_size)
     |> D.to_float()
+  end
+
+  defp calculate_quantity(budget, price, step_size) do
+    budget
+    |> D.div(D.from_float(price))
+    |> D.div_int(step_size)
+    |> D.mult(step_size)
+    |> D.to_string(:normal)
   end
 end
