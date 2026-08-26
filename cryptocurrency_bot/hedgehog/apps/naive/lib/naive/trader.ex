@@ -21,7 +21,7 @@ defmodule Naive.Trader do
   def init(state) do
     symbol = String.upcase(state.symbol)
 
-    Logger.info("Initializing new trader for #{symbol}")
+    Logger.info("[#{state.id}] Initializing new trader for #{symbol}")
 
     subscribe(symbol)
 
@@ -44,20 +44,20 @@ defmodule Naive.Trader do
     price = calculate_buy_price(price, buy_down_interval, tick_size)
     quantity = calculate_quantity(budget, price, step_size)
 
-    Logger.info("Placing BUY order for #{symbol} @ #{price}, quantity: #{quantity}")
+    Logger.info("[#{state.id}] Placing BUY order for #{symbol} @ #{price}, quantity: #{quantity}")
 
     {:ok, %Binance.OrderResponse{} = order} =
       @binance_client.order_limit_buy(symbol, quantity, price, "GTC")
 
     new_state = %{state | buy_order: order}
-    #  Naive.Leader.notify(new_state)
+    Naive.Leader.notify(new_state)
 
     {:noreply, new_state}
   end
 
   def handle_info(
         %TradeEvent{
-          price: trade_price
+          price: current_price
         },
         %State{
           symbol: symbol,
@@ -69,10 +69,12 @@ defmodule Naive.Trader do
           },
           sell_order: nil,
           profit_target: profit_target,
-          tick_size: tick_size
+          tick_size: tick_size,
+          rebuy_interval: rebuy_interval,
+          rebuy_notified: false
         } = state
       )
-      when trade_price <= buy_price do
+      when current_price <= buy_price do
     {:ok, %Binance.Order{} = current_buy_order} =
       @binance_client.get_order(
         symbol,
@@ -85,7 +87,7 @@ defmodule Naive.Trader do
     sell_price = calculate_sell_price(buy_price, profit_target, tick_size)
 
     Logger.info(
-      "Buy order filled, placing SELL order for " <>
+      "[#{state.id}] Buy order filled, placing SELL order for " <>
         "#{symbol} @ #{sell_price}, quantity: #{quantity}"
     )
 
@@ -95,7 +97,14 @@ defmodule Naive.Trader do
     new_state = %{state | buy_order: buy_order_response, sell_order: order}
     Naive.Leader.notify(new_state)
 
-    {:noreply, new_state}
+    if trigger_rebuy?(buy_price, current_price, rebuy_interval) do
+      Logger.info("[#{state.id}] Rebuy triggered for #{symbol} trader")
+      new_state = %{new_state | rebuy_notified: true}
+      Naive.Leader.notify(:rebuy_triggered, new_state)
+      {:noreply, new_state}
+    else
+      {:noreply, new_state}
+    end
   end
 
   def handle_info(
@@ -119,7 +128,7 @@ defmodule Naive.Trader do
     if current_sell_order.status == "FILLED" do
       sell_order_response = convert_order_to_order_response(current_sell_order)
 
-      Logger.info("Trade finished, trader will now exit")
+      Logger.info("[#{state.id}] Trade finished, trader will now exit")
 
       new_state = %{state | sell_order: sell_order_response}
       Naive.Leader.notify(new_state)
@@ -173,5 +182,18 @@ defmodule Naive.Trader do
     |> D.div_int(step_size)
     |> D.mult(step_size)
     |> D.to_string(:normal)
+  end
+
+  defp trigger_rebuy?(buy_price, current_price, rebuy_interval) do
+    buy_price = Decimal.from_float(buy_price)
+    current_price = Decimal.from_float(current_price)
+
+    rebuy_price =
+      D.sub(
+        buy_price,
+        D.mult(buy_price, rebuy_interval)
+      )
+
+    D.lt?(current_price, rebuy_price)
   end
 end
