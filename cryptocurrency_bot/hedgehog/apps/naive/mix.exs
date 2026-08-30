@@ -28,6 +28,8 @@ defmodule Naive.MixProject do
     [
       {:binance, "~> 1.0"},
       {:decimal, "~> 2.0"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"},
       {:streamer, in_umbrella: true},
       {:binance_mock, in_umbrella: true}
     ]
