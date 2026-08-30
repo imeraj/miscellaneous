@@ -9,6 +9,12 @@
 # move said applications out of the umbrella.
 import Config
 
+config :streamer, Streamer.Repo,
+  database: "streamer_repo",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost"
+
 config :naive, Naive.Repo,
   database: "naive_repo",
   username: "postgres",
@@ -30,6 +36,9 @@ config :naive,
       rebuy_interval: "0.001"
     }
   }
+
+config :streamer,
+  ecto_repos: [Streamer.Repo]
 
 # Import secrets file with Binance keys if it exists
 if File.exists?("config/secrets.exs") do

@@ -18,7 +18,7 @@ defmodule Streamer.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: [:logger],
+      extra_applications: [:logger, :wx, :runtime_tools, :observer],
       mod: {Streamer.Application, []}
     ]
   end
@@ -26,6 +26,9 @@ defmodule Streamer.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:binance, "~> 1.0"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"},
       {:jason, "~> 1.4"},
       {:websockex, "~> 0.5.1"},
       {:phoenix_pubsub, "~> 2.0"}

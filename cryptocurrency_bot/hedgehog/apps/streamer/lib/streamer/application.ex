@@ -7,11 +7,15 @@ defmodule Streamer.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [{Phoenix.PubSub, name: Streamer.PubSub}]
+    children = [
+      Streamer.Repo,
+      {Phoenix.PubSub, name: Streamer.PubSub},
+      {Streamer.Supervisor, []}
+    ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: Streamer.Supervisor]
+    opts = [strategy: :one_for_one, name: Streamer.Application]
     Supervisor.start_link(children, opts)
   end
 end
