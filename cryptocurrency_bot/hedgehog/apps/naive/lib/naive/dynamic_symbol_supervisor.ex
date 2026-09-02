@@ -1,0 +1,105 @@
+defmodule Naive.DynamicSymbolSupervisor do
+  use DynamicSupervisor
+
+  require Logger
+
+  import Ecto.Query, only: [from: 2]
+
+  alias Naive.Repo
+  alias Naive.Schema.Setting
+
+  # API
+  def start_link(init_arg) do
+    DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+  end
+
+  def start_trading(symbol) when is_binary(symbol) do
+    case get_pid(symbol) do
+      nil ->
+        Logger.info("Starting trading of #{symbol}")
+        {:ok, _setting} = update_trading_status(symbol, :on)
+        {:ok, _pid} = start_symbol_supervisor(symbol)
+
+      pid ->
+        Logger.warning("Trading on #{symbol} already started")
+        {:ok, _settings} = update_trading_status(symbol, :on)
+        {:ok, pid}
+    end
+
+    :ok
+  end
+
+  def stop_trading(symbol) when is_binary(symbol) do
+    case get_pid(symbol) do
+      nil ->
+        Logger.warning("Trading on #{symbol} already stopped")
+        {:ok, _settings} = update_trading_status(symbol, :off)
+
+      pid ->
+        Logger.info("Stopping trading of #{symbol}")
+
+        :ok =
+          DynamicSupervisor.terminate_child(
+            Naive.DynamicSymbolSupervisor,
+            pid
+          )
+
+        {:ok, _settings} = update_trading_status(symbol, :off)
+    end
+
+    :ok
+  end
+
+  def shutdown_trading(symbol) when is_binary(symbol) do
+    case get_pid(symbol) do
+      nil ->
+        Logger.warning("Trading on #{symbol} already stopped")
+        {:ok, _settings} = update_trading_status(symbol, :off)
+
+      _pid ->
+        Logger.info("Shutdown of trading on #{symbol} initialized")
+        {:ok, settings} = update_trading_status(symbol, :shutdown)
+        Naive.Leader.notify(:settings_updated, settings)
+    end
+
+    :ok
+  end
+
+  def autostart_trading do
+    fetch_symbols_to_trade()
+    |> Enum.map(&start_trading/1)
+  end
+
+  ## Callbacks
+  def init(_init_arg) do
+    DynamicSupervisor.init(strategy: :one_for_one)
+  end
+
+  # Private functions
+  defp get_pid(symbol) do
+    Process.whereis(:"Elixir.Naive.SymbolSupervisor-#{String.upcase(symbol)}")
+  end
+
+  defp update_trading_status(symbol, status)
+       when is_binary(symbol) and is_atom(status) do
+    Repo.get_by(Setting, symbol: String.upcase(symbol))
+    |> Ecto.Changeset.change(%{status: status})
+    |> Repo.update()
+  end
+
+  defp start_symbol_supervisor(symbol) do
+    DynamicSupervisor.start_child(
+      Naive.DynamicSymbolSupervisor,
+      {Naive.SymbolSupervisor, symbol}
+    )
+  end
+
+  defp fetch_symbols_to_trade do
+    Repo.all(
+      from(s in Setting,
+        where: s.status == :on,
+        select: s.symbol
+      )
+    )
+  end
+end

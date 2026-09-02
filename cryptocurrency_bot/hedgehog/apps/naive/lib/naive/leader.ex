@@ -34,6 +34,13 @@ defmodule Naive.Leader do
     )
   end
 
+  def notify(:settings_updated, settings) do
+    GenServer.call(
+      :"#{__MODULE__}-#{settings.symbol}",
+      {:update_settings, settings}
+    )
+  end
+
   def start_link(symbol) do
     GenServer.start_link(__MODULE__, symbol, name: :"#{__MODULE__}-#{symbol}")
   end
@@ -72,6 +79,14 @@ defmodule Naive.Leader do
   end
 
   def handle_call(
+        {:update_settings, new_settings},
+        _,
+        state
+      ) do
+    {:reply, :ok, %{state | settings: new_settings}}
+  end
+
+  def handle_call(
         {:rebuy_triggered, new_trader_state},
         {trader_pid, _},
         %{traders: traders, symbol: symbol, settings: settings} = state
@@ -91,8 +106,17 @@ defmodule Naive.Leader do
             Logger.info("All traders already started for #{symbol}")
             updated_traders
           else
-            Logger.info("Starting new trader for #{symbol}")
-            [start_new_trader(fresh_trader_state(settings)) | updated_traders]
+            if settings.status == :shutdown do
+              Logger.warning(
+                "The leader won't start a new trader on #{symbol} " <>
+                  "as symbol is in the 'shutdown' state"
+              )
+
+              updated_traders
+            else
+              Logger.info("Starting new trader for #{symbol}")
+              [start_new_trader(fresh_trader_state(settings)) | updated_traders]
+            end
           end
 
         {:reply, :ok, %{state | traders: updated_traders}}
@@ -112,11 +136,24 @@ defmodule Naive.Leader do
             "trader that leader is not aware of"
         )
 
+        if settings.status == :shutdown and traders == [], do: Naive.stop_trading(state.symbol)
+
         {:noreply, state}
 
       index ->
-        new_trader_data = start_new_trader(fresh_trader_state(settings))
-        new_traders = List.replace_at(traders, index, new_trader_data)
+        new_traders =
+          if settings.status == :shutdown do
+            Logger.warning(
+              "The leader won't start a new trader on #{symbol} " <>
+                "as symbol is in the 'shutdown' state"
+            )
+
+            if length(traders) == 1, do: Naive.stop_trading(state.symbol)
+            List.delete_at(traders, index)
+          else
+            new_trader_data = start_new_trader(fresh_trader_state(settings))
+            List.replace_at(traders, index, new_trader_data)
+          end
 
         {:noreply, %{state | traders: new_traders}}
     end
@@ -169,6 +206,7 @@ defmodule Naive.Leader do
   end
 
   defp fetch_symbol_settings(symbol) do
+    symbol = String.upcase(symbol)
     symbol_filters = fetch_symbol_filters(symbol)
     settings = Repo.get_by!(Naive.Schema.Setting, symbol: symbol)
 
@@ -176,6 +214,7 @@ defmodule Naive.Leader do
   end
 
   defp fetch_symbol_filters(symbol) do
+    symbol = String.upcase(symbol)
     {:ok, exchange_info} = @binance_client.get_exchange_info()
 
     symbol_filters =
