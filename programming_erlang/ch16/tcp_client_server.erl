@@ -1,4 +1,4 @@
--module(tcp_client).
+-module(tcp_client_server).
 -export([nano_get_url/1, start_nano_server/0, nano_client_eval/1]).
 -import(lists, [reverse/1]).
 
