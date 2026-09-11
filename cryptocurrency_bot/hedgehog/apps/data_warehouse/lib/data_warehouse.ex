@@ -1,6 +1,8 @@
 defmodule DataWarehouse do
   alias DataWarehouse.Subscriber.DynamicSupervisor
 
+  def publish_data(args), do: DataWarehouse.Publisher.start_link(args)
+
   def start_storing(stream, symbol) do
     to_topic(stream, symbol)
     |> DynamicSupervisor.start_worker()
