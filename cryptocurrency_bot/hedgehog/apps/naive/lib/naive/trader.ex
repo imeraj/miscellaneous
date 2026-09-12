@@ -6,7 +6,7 @@ defmodule Naive.Trader do
   require Logger
 
   alias Naive.Trader.State
-  alias Streamer.Binance.TradeEvent
+  alias Core.Struct.TradeEvent
   alias Decimal, as: D
 
   @binance_client Application.compile_env(:naive, :binance_client)
@@ -151,7 +151,7 @@ defmodule Naive.Trader do
 
   ## Private functions
   defp subscribe(symbol) do
-    Phoenix.PubSub.subscribe(Streamer.PubSub, "TRADE_EVENTS:#{symbol}")
+    Phoenix.PubSub.subscribe(Core.PubSub, "TRADE_EVENTS:#{symbol}")
   end
 
   defp convert_order_to_order_response(%Binance.Order{} = order) do
@@ -207,7 +207,7 @@ defmodule Naive.Trader do
     order = convert_to_order(response)
 
     Phoenix.PubSub.broadcast(
-      Streamer.PubSub,
+      Core.PubSub,
       "ORDERS:#{order.symbol}",
       order
     )

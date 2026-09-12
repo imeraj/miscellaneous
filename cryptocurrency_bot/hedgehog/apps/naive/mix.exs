@@ -11,7 +11,14 @@ defmodule Naive.MixProject do
       lockfile: "../../mix.lock",
       elixir: "~> 1.20",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      deps: deps(),
+      aliases: aliases()
+    ]
+  end
+
+  defp aliases do
+    [
+      seed: ["run priv/scripts/seed_settings.exs"]
     ]
   end
 
@@ -30,7 +37,6 @@ defmodule Naive.MixProject do
       {:decimal, "~> 2.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
-      {:streamer, in_umbrella: true},
       {:binance_mock, in_umbrella: true},
       {:core, in_umbrella: true}
     ]

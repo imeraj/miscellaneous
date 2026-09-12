@@ -9,7 +9,6 @@ defmodule Streamer.Application do
   def start(_type, _args) do
     children = [
       Streamer.Repo,
-      {Phoenix.PubSub, name: Streamer.PubSub},
       {Streamer.Supervisor, []}
     ]
 

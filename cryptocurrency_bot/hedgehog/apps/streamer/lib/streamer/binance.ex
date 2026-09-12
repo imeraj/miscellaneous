@@ -3,7 +3,7 @@ defmodule Streamer.Binance do
 
   require Logger
 
-  alias Streamer.Binance.TradeEvent
+  alias Core.Struct.TradeEvent
 
   @stream_endpoint "wss://stream.binance.com:9443/ws/"
 
@@ -55,6 +55,6 @@ defmodule Streamer.Binance do
   end
 
   defp broadcast(event) do
-    Phoenix.PubSub.broadcast(Streamer.PubSub, "TRADE_EVENTS:#{event.symbol}", event)
+    Phoenix.PubSub.broadcast(Core.PubSub, "TRADE_EVENTS:#{event.symbol}", event)
   end
 end

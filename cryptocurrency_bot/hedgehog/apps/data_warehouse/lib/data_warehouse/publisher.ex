@@ -51,10 +51,10 @@ defmodule DataWarehouse.Publisher do
       |> Map.from_struct()
       |> Map.update!(:price, &Decimal.to_float/1)
       |> Map.update!(:quantity, &Decimal.to_string/1)
-      |> then(&struct(Streamer.Binance.TradeEvent, &1))
+      |> then(&struct(Core.Struct.TradeEvent, &1))
 
     Phoenix.PubSub.broadcast(
-      Streamer.PubSub,
+      Core.PubSub,
       "TRADE_EVENTS:#{trade_event.symbol}",
       new_trade_event
     )
