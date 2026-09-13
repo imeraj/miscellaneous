@@ -125,11 +125,11 @@ defmodule BinanceMock do
     end
   end
 
-  defp generate_fake_order(symbol, quantity, price, side)
-       when is_binary(symbol) and
-              is_binary(quantity) and
-              is_number(price) and
-              (side == "BUY" or side == "SELL") do
+  def generate_fake_order(symbol, quantity, price, side)
+      when is_binary(symbol) and
+             is_binary(quantity) and
+             is_number(price) and
+             (side == "BUY" or side == "SELL") do
     current_timestamp = :os.system_time(:millisecond)
     order_id = GenServer.call(__MODULE__, :generate_id)
     client_order_id = :crypto.hash(:md5, "#{order_id}") |> Base.encode16()
@@ -154,7 +154,7 @@ defmodule BinanceMock do
     })
   end
 
-  defp convert_order_to_order_response(%Binance.Order{} = order) do
+  def convert_order_to_order_response(%Binance.Order{} = order) do
     response = struct(Binance.OrderResponse, Map.from_struct(order))
     %{response | transact_time: order.time}
   end

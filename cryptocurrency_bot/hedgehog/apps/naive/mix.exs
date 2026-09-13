@@ -33,10 +33,12 @@ defmodule Naive.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
+      {:mox, "~> 1.0", only: [:test, :integration]},
       {:binance, "~> 1.0"},
       {:decimal, "~> 2.0"},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"},
+      {:mimic, "~> 2.0", only: :test},
       {:binance_mock, in_umbrella: true},
       {:core, in_umbrella: true}
     ]
