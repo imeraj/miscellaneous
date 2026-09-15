@@ -7,13 +7,25 @@ start(Name, Mod) ->
 rpc(Name, Request) ->
     Name ! {self(), Request},
     receive
+        {_Name, crash} -> exit(rpc);
         {_Name, Response} -> Response
     end.
 
 loop(Name, Mod, State) ->
   receive
     {From, Request} ->
-        {Response, State1} = Mod:handle(Request, State),
-        From ! {Name, Response},
-        loop(Name, Mod, State1)
+        try Mod:handle(Request, State) of
+            {Response, NewState} ->
+               From ! {Name, Response},
+               loop(Name, Mod, NewState)
+        catch
+            _:Why ->
+                log_the_error(Name, Request, Why),
+                From ! {Name, crash},
+                loop(Name, Mod, State)
+        end
   end.
+
+log_the_error(Name, Request, Why) ->
+  io:format("Server ~p request ~p ~n"
+      "caused exception ~p ~n", [Name, Request, Why]).
