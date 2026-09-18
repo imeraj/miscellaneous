@@ -52,5 +52,5 @@ handle_call(stop, _From, Tab) ->
     {stop, normal, stopped, Tab}.
 handle_cast(_Msg, State) -> {noreply, State}.
 handle_info(_Info, State) -> {noreply, State}.
-terminate(_Reason, _State) -> ok.
+terminate(normal, _State) -> ok.
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
