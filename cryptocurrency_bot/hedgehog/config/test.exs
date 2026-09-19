@@ -8,3 +8,6 @@ config :data_warehouse, DataWarehouse.Repo, database: "data_warehouse_test"
 
 config :binance_mock,
   use_cached_exchange_info: true
+
+config :logger,
+  level: :error
