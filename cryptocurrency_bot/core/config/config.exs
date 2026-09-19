@@ -1,0 +1,44 @@
+# This file is responsible for configuring your umbrella
+# and **all applications** and their dependencies with the
+# help of the Config module.
+#
+# Note that all applications in your umbrella share the
+# same configuration and dependencies, which is why they
+# all use the same configuration file. If you want different
+# configurations or dependencies per app, it is best to
+# move said applications out of the umbrella.
+import Config
+
+config :core, Core.Repo,
+  database: "hedgehog_dev",
+  username: "postgres",
+  password: "postgres",
+  hostname: "localhost"
+
+config :logger,
+  level: :debug
+
+config :core,
+  ecto_repos: [Core.Repo],
+  exchanges: [
+    binance_mock: [
+      use_cached_exchange_info: false
+    ]
+  ],
+  binance_client: Exchange.BinanceMock,
+  trading: %{
+    defaults: %{
+      chunks: 5,
+      budget: 1000,
+      buy_down_interval: "0.0001",
+      profit_target: "-0.0012",
+      rebuy_interval: "0.001"
+    }
+  }
+
+# Import secrets file with Binance keys if it exists
+if File.exists?("config/secrets.exs") do
+  import_config("secrets.exs")
+end
+
+import_config "#{config_env()}.exs"
