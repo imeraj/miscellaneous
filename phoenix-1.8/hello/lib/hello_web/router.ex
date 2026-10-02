@@ -22,6 +22,12 @@ defmodule HelloWeb.Router do
     get "/hello/:messenger", HelloController, :show
   end
 
+  scope "/api", HelloWeb do
+    pipe_through :api
+
+    resources "/urls", UrlController, except: [:new, :edit]
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", HelloWeb do
   #   pipe_through :api
