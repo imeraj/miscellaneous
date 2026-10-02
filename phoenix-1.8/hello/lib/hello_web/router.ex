@@ -20,6 +20,13 @@ defmodule HelloWeb.Router do
     get "/", PageController, :home
     get "/hello", HelloController, :index
     get "/hello/:messenger", HelloController, :show
+
+    live "/thermostat", Live.ThermostatLive
+
+    live "/posts", PostLive.Index, :index
+    live "/posts/new", PostLive.Form, :new
+    live "/posts/:id", PostLive.Show, :show
+    live "/posts/:id/edit", PostLive.Form, :edit
   end
 
   scope "/api", HelloWeb do
