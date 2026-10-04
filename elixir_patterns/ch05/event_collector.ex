@@ -1,0 +1,39 @@
+defmodule EventCollector do
+  use GenServer
+
+  require Logger
+
+  # API
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+  end
+
+  def record_event(%User{} = user) do
+    GenServer.cast(__MODULE__, {:record_event, user})
+  end
+
+  def flush_events do
+    GenServer.call(__MODULE__, :flush_events)
+  end
+
+  # Callbacks
+  @impl true
+  def init(_) do
+    {:ok, %{count: 0, data: %{}}}
+  end
+
+  @impl true
+  def handle_cast({:record_event, %User{} = user}, %{count: count, data: data}) do
+    data = Map.update(data, user.id, 1, &(&1 + 1))
+    {:noreply, %{count: count + 1, data: data}}
+  end
+
+  @impl true
+  def handle_call(:flush_events, _from, %{count: count, data: data}) do
+    if count > 0 do
+      Logger.info("#{__MODULE__} - #{count} events flushed")
+    end
+
+    {:reply, data, %{count: 0, data: %{}}}
+  end
+end
