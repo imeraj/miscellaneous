@@ -7,16 +7,27 @@ defmodule SummerizerSupervisor do
 
   @impl true
   def init(init_args) do
+    partitions = Keyword.fetch!(init_args, :partitions)
+
     children = [
-      {EventCollector, init_args},
-      {EventFlusher, init_args}
+      {PartitionSupervisor,
+       child_spec: EventCollector.child_spec(init_args),
+       name: EventCollectorPartitionSupervisor,
+       partitions: partitions},
+      {PartitionSupervisor,
+       child_spec: EventFlusher.child_spec(init_args),
+       name: EventFlusherPartitionSupervisor,
+       partitions: partitions,
+       with_arguments: fn [opts], partition ->
+         [Keyword.put(opts, :partition, partition)]
+       end}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
   end
 end
 
-{:ok, pid} = SummerizerSupervisor.start_link(flush_interval: 1000)
+{:ok, pid} = SummerizerSupervisor.start_link(flush_interval: 1000, partitions: 2)
 Supervisor.which_children(pid)
 
 test_users = [

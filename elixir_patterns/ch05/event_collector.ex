@@ -5,15 +5,19 @@ defmodule EventCollector do
 
   # API
   def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts, name: __MODULE__)
+    GenServer.start_link(__MODULE__, opts)
   end
 
   def record_event(%User{} = user) do
-    GenServer.cast(__MODULE__, {:record_event, user})
+    user.id
+    |> via_tuple()
+    |> GenServer.cast({:record_event, user})
   end
 
-  def flush_events do
-    GenServer.call(__MODULE__, :flush_events)
+  def flush_events(partition) do
+    partition
+    |> via_tuple()
+    |> GenServer.call(:flush_events)
   end
 
   # Callbacks
@@ -31,9 +35,14 @@ defmodule EventCollector do
   @impl true
   def handle_call(:flush_events, _from, %{count: count, data: data}) do
     if count > 0 do
-      Logger.info("#{__MODULE__} - #{count} events flushed")
+      Logger.info("#{__MODULE__}:#{inspect(self())} - #{count} events flushed")
     end
 
     {:reply, data, %{count: 0, data: %{}}}
+  end
+
+  # Helpers
+  def via_tuple(term) do
+    {:via, PartitionSupervisor, {EventCollectorPartitionSupervisor, term}}
   end
 end
