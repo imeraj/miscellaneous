@@ -1,38 +1,36 @@
 defmodule HelloWeb.Router do
   use HelloWeb, :router
 
+  import HelloWeb.UserAuth
+
   pipeline :browser do
-    plug :accepts, ["html"]
-    plug :fetch_session
-    plug :fetch_live_flash
-    plug :put_root_layout, html: {HelloWeb.Layouts, :root}
-    plug :protect_from_forgery
-    plug :put_secure_browser_headers
+    plug(:accepts, ["html"])
+    plug(:fetch_session)
+    plug(:fetch_live_flash)
+    plug(:put_root_layout, html: {HelloWeb.Layouts, :root})
+    plug(:protect_from_forgery)
+    plug(:put_secure_browser_headers)
+    plug(:fetch_current_scope_for_user)
   end
 
   pipeline :api do
-    plug :accepts, ["json"]
+    plug(:accepts, ["json"])
   end
 
   scope "/", HelloWeb do
-    pipe_through :browser
+    pipe_through(:browser)
 
-    get "/", PageController, :home
-    get "/hello", HelloController, :index
-    get "/hello/:messenger", HelloController, :show
+    get("/", PageController, :home)
+    get("/hello", HelloController, :index)
+    get("/hello/:messenger", HelloController, :show)
 
-    live "/thermostat", Live.ThermostatLive
-
-    live "/posts", PostLive.Index, :index
-    live "/posts/new", PostLive.Form, :new
-    live "/posts/:id", PostLive.Show, :show
-    live "/posts/:id/edit", PostLive.Form, :edit
+    live("/thermostat", Live.ThermostatLive)
   end
 
   scope "/api", HelloWeb do
-    pipe_through :api
+    pipe_through(:api)
 
-    resources "/urls", UrlController, except: [:new, :edit]
+    resources("/urls", UrlController, except: [:new, :edit])
   end
 
   # Other scopes may use custom stacks.
@@ -50,10 +48,41 @@ defmodule HelloWeb.Router do
     import Phoenix.LiveDashboard.Router
 
     scope "/dev" do
-      pipe_through :browser
+      pipe_through(:browser)
 
-      live_dashboard "/dashboard", metrics: HelloWeb.Telemetry
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
+      live_dashboard("/dashboard", metrics: HelloWeb.Telemetry)
+      forward("/mailbox", Plug.Swoosh.MailboxPreview)
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", HelloWeb do
+    pipe_through([:browser, :redirect_if_user_is_authenticated])
+
+    get("/users/register", UserRegistrationController, :new)
+    post("/users/register", UserRegistrationController, :create)
+  end
+
+  scope "/", HelloWeb do
+    pipe_through([:browser, :require_authenticated_user])
+
+    get("/users/settings", UserSettingsController, :edit)
+    put("/users/settings", UserSettingsController, :update)
+    get("/users/settings/confirm-email/:token", UserSettingsController, :confirm_email)
+
+    live("/posts", PostLive.Index, :index)
+    live("/posts/new", PostLive.Form, :new)
+    live("/posts/:id", PostLive.Show, :show)
+    live("/posts/:id/edit", PostLive.Form, :edit)
+  end
+
+  scope "/", HelloWeb do
+    pipe_through([:browser])
+
+    get("/users/log-in", UserSessionController, :new)
+    get("/users/log-in/:token", UserSessionController, :confirm)
+    post("/users/log-in", UserSessionController, :create)
+    delete("/users/log-out", UserSessionController, :delete)
   end
 end
