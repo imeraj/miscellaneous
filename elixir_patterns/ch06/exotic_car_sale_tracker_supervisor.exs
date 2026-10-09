@@ -10,7 +10,8 @@ defmodule ExoticCarSaleTrackerSupervisor do
   def init(_) do
     children = [
       ExoticCarLookup,
-      ExoticCarSaleTracker
+      ExoticCarSaleTracker,
+      ExoticCarLookupEts
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

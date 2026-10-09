@@ -35,7 +35,7 @@ defmodule ExoticCarSaleTracker do
     vechicle = {year, make, model}
 
     new_state =
-      if ExoticCarLookup.exotic_car?(year, make, model) do
+      if ExoticCarLookupEts.exotic_car?(year, make, model) do
         Map.update(state, vechicle, {1, price}, fn {count, total_price} ->
           {count + 1, total_price + price}
         end)
