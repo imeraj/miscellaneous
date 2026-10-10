@@ -79,5 +79,4 @@ Enum.each(vehicles_to_track, fn {year, make_models} ->
 end)
 
 :dets.sync(dets_table)
-
 :dets.close(dets_table)
