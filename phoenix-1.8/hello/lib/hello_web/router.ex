@@ -15,6 +15,7 @@ defmodule HelloWeb.Router do
 
   pipeline :api do
     plug(:accepts, ["json"])
+    plug :fetch_current_scope_for_api_user
   end
 
   scope "/", HelloWeb do
