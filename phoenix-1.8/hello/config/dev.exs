@@ -22,7 +22,7 @@ config :hello, HelloWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "Oxkk/UFt4GIZxrrjPAtDOr+oAze9MgJDkciPl757dF5/VBTqG8bBrsV1M2Mie78a",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:hello, ~w(--sourcemap=inline --watch)]},
