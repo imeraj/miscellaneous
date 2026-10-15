@@ -8,8 +8,11 @@ defmodule CarAuction.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: CarAuction.Worker.start_link(arg)
-      # {CarAuction.Worker, arg}
+      CarAuction.CacheRestore,
+      CarAuction.Cache,
+      CarAuction.Registry,
+      CarAuction.DynamicSupervisor,
+      CarAuction.Init
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
