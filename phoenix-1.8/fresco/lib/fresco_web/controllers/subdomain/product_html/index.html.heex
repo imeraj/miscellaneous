@@ -1,0 +1,23 @@
+<section class="mx-auto max-w-6xl px-4 py-12">
+  <h1
+    class="mb-8 text-center text-3xl font-bold"
+    style={"color: #{@brand_colour}"}
+  >
+    Welcome to {@subdomain}!
+  </h1>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <%= for product <- @products do %>
+      <div class="rounded-lg border p-6 shadow-sm">
+        <h2 class="text-lg font-semibold">{product.name}</h2>
+
+        <p
+          class="mt-2 text-xl font-bold"
+          style={"color: #{@brand_colour}"}
+        >
+          ${product.price}
+        </p>
+      </div>
+    <% end %>
+  </div>
+</section>

@@ -18,5 +18,7 @@ defmodule FrescoWeb.SubdomainRouter do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    get "/products", ProductController, :index
   end
 end

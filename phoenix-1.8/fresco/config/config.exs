@@ -11,6 +11,8 @@ config :fresco,
   ecto_repos: [Fresco.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :triplex, repo: Fresco.Repo, tenant_prefix: "fresco_"
+
 # Configure the endpoint
 config :fresco, FrescoWeb.Endpoint,
   url: [host: "fresco.com"],
