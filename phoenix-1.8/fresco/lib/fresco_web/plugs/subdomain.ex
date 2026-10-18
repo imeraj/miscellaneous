@@ -1,6 +1,9 @@
 defmodule FrescoWeb.Plugs.Subdmain do
+  @behaviour Plug
+  
   import Plug.Conn, only: [put_private: 3, halt: 1]
 
+  @impl true
   def init(opts) do
     Map.merge(
       opts,
@@ -8,6 +11,7 @@ defmodule FrescoWeb.Plugs.Subdmain do
     )
   end
 
+  @impl true
   def call(
         %Plug.Conn{host: host} = conn,
         %{root_host: root_host, subdomain_router: router} = _opts
