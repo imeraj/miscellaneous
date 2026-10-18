@@ -1,6 +1,6 @@
 defmodule FrescoWeb.Plugs.Subdmain do
   @behaviour Plug
-  
+
   import Plug.Conn, only: [put_private: 3, halt: 1]
 
   @impl true
@@ -11,6 +11,7 @@ defmodule FrescoWeb.Plugs.Subdmain do
     )
   end
 
+  # also see - https://medium.com/@jonnyeberhardt7/the-ultimate-guide-to-plugs-powering-your-phoenix-applications-dbab0b3c0009
   @impl true
   def call(
         %Plug.Conn{host: host} = conn,
