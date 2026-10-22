@@ -22,7 +22,9 @@ defmodule FrescoWeb.Subdomain.SessionController do
           "password" => password
         }
       }) do
-    UserManager.authenticate_user(username, password)
+    tenant = conn.private[:subdomain]
+
+    UserManager.authenticate_user(tenant, username, password)
     |> login_reply(conn)
   end
 
@@ -42,7 +44,7 @@ defmodule FrescoWeb.Subdomain.SessionController do
   defp login_reply({:ok, user}, conn) do
     conn
     |> put_flash(:info, "Welcome back!")
-    |> Guardian.Plug.sign_in(user)
+    |> Guardian.Plug.sign_in(user, %{}, tenant: conn.private[:subdomain])
     |> redirect(to: ~p"/products")
   end
 

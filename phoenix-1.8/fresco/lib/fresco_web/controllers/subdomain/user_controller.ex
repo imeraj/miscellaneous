@@ -10,12 +10,13 @@ defmodule FrescoWeb.Subdomain.UserController do
 
   def new(conn, _params) do
     changeset = UserManager.change_user(%User{})
-
     render(conn, :new, changeset: changeset)
   end
 
   def create(conn, %{"user" => user_params}) do
-    case UserManager.create_user(user_params) do
+    tenant = conn.private[:subdomain]
+
+    case UserManager.create_user(tenant, user_params) do
       {:ok, _user} ->
         conn
         |> put_flash(:info, "User created successfully. Please log in.")
