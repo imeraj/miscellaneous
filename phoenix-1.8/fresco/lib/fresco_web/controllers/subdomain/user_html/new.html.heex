@@ -1,0 +1,6 @@
+<h1>{gettext("Welcome to %{name}!", name: Map.get(@conn.private, :subdomain, "fresco"))}</h1>
+
+<.user_form
+  changeset={@changeset}
+  action={~p"/users"}
+/>

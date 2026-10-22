@@ -10,6 +10,10 @@ defmodule FrescoWeb.SubdomainRouter do
     plug :put_secure_browser_headers
   end
 
+  pipeline :auth do
+    plug Fresco.UserManager.Pipeline
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
   end
@@ -17,8 +21,17 @@ defmodule FrescoWeb.SubdomainRouter do
   scope "/", FrescoWeb.Subdomain do
     pipe_through :browser
 
+    resources "/users", UserController, only: [:new, :create]
+    get "/login", SessionController, :new
+    post "/login", SessionController, :create
+  end
+
+  scope "/", FrescoWeb.Subdomain do
+    pipe_through [:browser, :auth]
+
     get "/", PageController, :home
 
     get "/products", ProductController, :index
+    delete "/logout", SessionController, :logout
   end
 end

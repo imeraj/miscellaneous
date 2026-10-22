@@ -11,6 +11,10 @@ config :fresco,
   ecto_repos: [Fresco.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :fresco, Fresco.UserManager.Guardian,
+  issuer: "fresco",
+  secret_key: "OTBXABt-khVvhhR1mColam2sNOMvnRGCQu5-QHkJnVQ4h2bx74v78427RsdWIdwK"
+
 config :triplex, repo: Fresco.Repo, tenant_prefix: "fresco_"
 
 # Configure the endpoint
