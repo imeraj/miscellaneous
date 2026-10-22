@@ -1,27 +1,65 @@
-<h1>Login</h1>
+<div class="w-full flex justify-center items-center py-12 px-4">
+  <div class="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-8 shadow-xl">
+    <div class="text-center mb-8">
+      <img
+        src={~p"/images/logo.svg"}
+        alt="Fresco"
+        class="mx-auto mb-4"
+        style="width: 56px; height: 56px;"
+      />
+      <h1 class="text-3xl font-bold">Welcome back</h1>
+      <p class="mt-2 opacity-70">Sign in to your Fresco workspace</p>
+    </div>
 
-<.form for={%{}} action={~p"/login"} as={:session}>
-  <div class="form-group mb-3">
-    <input
-      type="text"
-      name="session[username]"
-      placeholder="Username"
-      class="form-control"
-      required
-    />
+    <.form for={%{}} action={~p"/login"} as={:session}>
+      <div class="mb-5">
+        <label for="session_username" class="block text-sm font-medium mb-2">
+          Username
+        </label>
+        <input
+          id="session_username"
+          type="text"
+          name="session[username]"
+          placeholder="Enter your username"
+          class="w-full rounded-lg border border-base-300 bg-base-100 px-4 py-3"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="mb-6">
+        <label for="session_password" class="block text-sm font-medium mb-2">
+          Password
+        </label>
+        <input
+          id="session_password"
+          type="password"
+          name="session[password]"
+          placeholder="Enter your password"
+          class="w-full rounded-lg border border-base-300 bg-base-100 px-4 py-3"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-primary-content hover:opacity-90"
+      >
+        Log in
+      </button>
+    </.form>
+
+    <div class="mt-6 border-t border-base-300 pt-5 text-center">
+      <p class="text-sm opacity-70">
+        Don't have an account yet?
+      </p>
+      <.link
+        navigate={~p"/users/new"}
+        class="mt-2 inline-block font-semibold text-primary hover:underline"
+      >
+        Create an account
+      </.link>
+    </div>
   </div>
-
-  <div class="form-group mb-3">
-    <input
-      type="password"
-      name="session[password]"
-      placeholder="Password"
-      class="form-control"
-      required
-    />
-  </div>
-
-  <button type="submit" class="btn btn-primary">
-    Log In
-  </button>
-</.form>
+</div>

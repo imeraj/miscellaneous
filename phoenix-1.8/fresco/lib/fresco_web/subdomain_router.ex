@@ -6,6 +6,7 @@ defmodule FrescoWeb.SubdomainRouter do
     plug :fetch_session
     plug :fetch_live_flash
     plug :put_root_layout, html: {FrescoWeb.Layouts, :root}
+    plug :put_layout, html: {FrescoWeb.Layouts, :main}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
   end

@@ -1,16 +1,71 @@
-<.form for={Phoenix.Component.to_form(@changeset)} action={@action}>
-  <%= if @changeset.action do %>
-    <div class="alert alert-danger">
-      <p>Oops, something went wrong! Please check the errors below.</p>
+<div class="w-full flex justify-center items-center px-4 py-12">
+  <div class="w-full max-w-md rounded-2xl border border-base-300 bg-base-100 p-8 shadow-xl">
+    <div class="mb-8 text-center">
+      <img
+        src={~p"/images/logo.svg"}
+        alt="Fresco"
+        class="mx-auto mb-4"
+        style="width: 56px; height: 56px;"
+      />
+      <h1 class="text-3xl font-bold">Create your account</h1>
+      <p class="mt-2 opacity-70">
+        Join Fresco and get started today
+      </p>
     </div>
-  <% end %>
 
-  <.input field={Phoenix.Component.to_form(@changeset)[:username]} label="Username" />
-  <.input
-    field={Phoenix.Component.to_form(@changeset)[:password]}
-    type="password"
-    label="Password"
-  />
+    <.form
+      for={Phoenix.Component.to_form(@changeset)}
+      action={@action}
+      class="space-y-5"
+    >
+      <%= if @changeset.action do %>
+        <div class="rounded-lg border border-error/30 bg-error/10 p-4 text-sm text-error">
+          <p class="font-semibold">We couldn't create your account.</p>
+          <p class="mt-1">
+            Please check the fields below and try again.
+          </p>
+        </div>
+      <% end %>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
-</.form>
+      <div>
+        <.input
+          field={Phoenix.Component.to_form(@changeset)[:username]}
+          label="Username"
+          placeholder="Choose a username"
+          autocomplete="username"
+          class="w-full"
+        />
+      </div>
+
+      <div>
+        <.input
+          field={Phoenix.Component.to_form(@changeset)[:password]}
+          type="password"
+          label="Password"
+          placeholder="Create a strong password"
+          autocomplete="new-password"
+          class="w-full"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full rounded-lg bg-primary px-4 py-3 font-semibold text-primary-content transition-opacity hover:opacity-90"
+      >
+        Create account
+      </button>
+    </.form>
+
+    <div class="mt-6 border-t border-base-300 pt-5 text-center">
+      <p class="text-sm opacity-70">
+        Already have an account?
+      </p>
+      <.link
+        navigate={~p"/login"}
+        class="mt-2 inline-block font-semibold text-primary hover:underline"
+      >
+        Sign in
+      </.link>
+    </div>
+  </div>
+</div>

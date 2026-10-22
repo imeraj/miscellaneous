@@ -4,7 +4,7 @@ defmodule Fresco.UserManager.User do
 
   schema "users" do
     field :username, :string
-    field :password, :string
+    field :password, :string, redact: true
 
     timestamps(type: :utc_datetime)
   end

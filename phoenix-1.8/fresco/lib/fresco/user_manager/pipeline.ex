@@ -9,5 +9,10 @@ defmodule Fresco.UserManager.Pipeline do
   # If there is an authorization header, restrict it to an access token and validate it
   plug Guardian.Plug.VerifyHeader, claims: %{"typ" => "access"}
   # Load the user if either of the verifications worked
-  plug Guardian.Plug.LoadResource
+  plug Guardian.Plug.LoadResource, allow_blank: true
+  plug :assign_current_user
+
+  defp assign_current_user(conn, _opts) do
+    Plug.Conn.assign(conn, :current_user, Guardian.Plug.current_resource(conn)) |> IO.inspect()
+  end
 end
