@@ -24,15 +24,20 @@ end
 # Environment sources
 source!([Path.expand("./.env"), System.get_env()])
 
-# Configure Uberauth for GitHub OAuth
 config :ueberauth, Ueberauth,
   providers: [
-    github: {Ueberauth.Strategy.Github, [default_scope: "read:user,user:email"]}
+    github: {Ueberauth.Strategy.Github, [default_scope: "read:user,user:email"]},
+    auth0: {Ueberauth.Strategy.Auth0, [default_scope: "openid profile email"]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Github.OAuth,
   client_id: env!("GITHUB_CLIENT_ID", :string),
   client_secret: env!("GITHUB_CLIENT_SECRET", :string)
+
+config :ueberauth, Ueberauth.Strategy.Auth0.OAuth,
+  domain: env!("AUTH0_DOMAIN", :string),
+  client_id: env!("AUTH0_CLIENT_ID", :string),
+  client_secret: env!("AUTH0_CLIENT_SECRET", :string)
 
 config :github_auth, GithubAuthWeb.Endpoint,
   http: [port: String.to_integer(System.get_env("PORT", "4000"))]

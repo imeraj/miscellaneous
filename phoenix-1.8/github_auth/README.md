@@ -2,6 +2,8 @@
 
 [https://jean-marc.io/blog/integrating-github-oauth-in-elixir-phoenix-complete-authentication-tutorial](https://jean-marc.io/blog/integrating-github-oauth-in-elixir-phoenix-complete-authentication-tutorial)
 
+**Update secrets and redirect URI in github / auth0 before running
+
 # GithubAuth
 
 To start your Phoenix server:

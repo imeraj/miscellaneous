@@ -1,6 +1,8 @@
 defmodule GithubAuthWeb.AuthController do
   use GithubAuthWeb, :controller
 
+  require Logger
+
   alias Ueberauth.Auth
   alias GithubAuth.Accounts
 
@@ -25,14 +27,16 @@ defmodule GithubAuthWeb.AuthController do
 
       {:error, _reason} ->
         conn
-        |> put_flash(:error, "Github login failed")
+        |> put_flash(:error, "Login failed")
         |> redirect(to: ~p"/auth/login")
     end
   end
 
-  def callback(%{assigns: %{ueberauth_failure: _failure}} = conn, _params) do
+  def callback(%{assigns: %{ueberauth_failure: failure}} = conn, _params) do
+    Logger.error("Ueberauth failure: #{inspect(failure)}")
+
     conn
-    |> put_flash(:error, "Github login canceled")
+    |> put_flash(:error, "Login canceled")
     |> redirect(to: ~p"/auth/login")
   end
 
