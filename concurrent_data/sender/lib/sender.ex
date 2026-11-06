@@ -5,12 +5,17 @@ defmodule Sender do
 
   def notify_all(emails) when is_list(emails) do
     emails
-    |> Enum.map(fn email -> Task.async(fn -> send_email(email) end) end)
-    |> Task.await_many()
+    |> Task.async_stream(&send_email/1,
+      max_concurrency: 3,
+      ordered: false,
+      on_timeout: :kill_task
+    )
+    |> Enum.to_list()
   end
 
   def send_email(email) do
-    Process.sleep(3000)
+    Process.sleep(Enum.random([3000, 4000, 5000, 10000]))
+
     IO.puts("Email to #{email} sent")
     {:ok, :email_sent}
   end
