@@ -12,8 +12,8 @@ defmodule Sender do
     |> Enum.to_list()
   end
 
-  def send_email("konnichiwa@world.com" = email),
-    do: raise("Oops, coudn't send email to #{email}")
+  def send_email("konnichiwa@world.com" = _email),
+    do: :error
 
   def send_email(email) do
     Process.sleep(3000)
