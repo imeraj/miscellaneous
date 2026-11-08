@@ -4,18 +4,19 @@ defmodule Sender do
   """
 
   def notify_all(emails) when is_list(emails) do
-    emails
-    |> Task.async_stream(&send_email/1,
+    Sender.EmailTaskSupervisor
+    |> Task.Supervisor.async_stream_nolink(emails, &send_email/1,
       max_concurrency: 3,
-      ordered: false,
-      on_timeout: :kill_task
+      ordered: false
     )
     |> Enum.to_list()
   end
 
-  def send_email(email) do
-    Process.sleep(Enum.random([3000, 4000, 5000, 10000]))
+  def send_email("konnichiwa@world.com" = email),
+    do: raise("Oops, coudn't send email to #{email}")
 
+  def send_email(email) do
+    Process.sleep(3000)
     IO.puts("Email to #{email} sent")
     {:ok, :email_sent}
   end
