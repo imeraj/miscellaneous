@@ -1,5 +1,5 @@
 defmodule Jobber.Job do
-  use GenServer
+  use GenServer, restart: :transient
 
   require Logger
 
@@ -12,7 +12,7 @@ defmodule Jobber.Job do
   ]
 
   def start_link(args) do
-    GenServer.start(__MODULE__, args, name: __MODULE__)
+    GenServer.start_link(__MODULE__, args, name: __MODULE__)
   end
 
   # Callbacks
