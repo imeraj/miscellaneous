@@ -13,7 +13,8 @@ defmodule Jobber.JobSupervisor do
 
     opts = [
       strategy: :one_for_one,
-      max_seconds: 30
+      max_seconds: 30,
+      max_restarts: 3
     ]
 
     Supervisor.init(children, opts)
