@@ -15,6 +15,7 @@ defmodule Scraper.PageProducer do
   @impl GenStage
   def init(initial_state) do
     Logger.info("PageProducer init")
+
     {:producer, initial_state}
   end
 
@@ -26,6 +27,7 @@ defmodule Scraper.PageProducer do
   @impl GenStage
   def handle_demand(demand, state) do
     Logger.info("PageProducer received demand for #{demand} pages")
+
     events = []
     {:noreply, events, state}
   end

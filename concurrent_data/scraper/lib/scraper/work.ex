@@ -5,4 +5,10 @@ defmodule Scraper.Work do
     |> :timer.seconds()
     |> Process.sleep()
   end
+
+  def online?(_url) do
+    do_something()
+
+    Enum.random([false, true, true])
+  end
 end

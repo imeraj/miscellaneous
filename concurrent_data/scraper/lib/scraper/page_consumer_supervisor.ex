@@ -2,8 +2,8 @@ defmodule Scraper.PageConsumerSupervisor do
   use ConsumerSupervisor
   require Logger
 
+  alias Scraper.OnlinePageProducerConsumer
   alias Scraper.PageConsumer
-  alias Scraper.PageProducer
 
   def start_link(_args) do
     ConsumerSupervisor.start_link(__MODULE__, :ok)
@@ -23,7 +23,7 @@ defmodule Scraper.PageConsumerSupervisor do
     opts = [
       strategy: :one_for_one,
       subscribe_to: [
-        {PageProducer, max_demand: 2}
+        {OnlinePageProducerConsumer, max_demand: 2}
       ]
     ]
 
