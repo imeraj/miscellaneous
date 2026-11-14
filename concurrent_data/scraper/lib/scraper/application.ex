@@ -10,8 +10,8 @@ defmodule Scraper.Application do
     children = [
       {Registry, keys: :unique, name: ProducerConsumerRegistry},
       Scraper.PageProducer,
-      producer_consumer_spec(id: 1),
-      producer_consumer_spec(id: 2),
+      producer_consumer_spec(id: 1, partition: :a),
+      producer_consumer_spec(id: 2, partition: :b),
       Scraper.PageConsumerSupervisor
     ]
 
@@ -21,12 +21,12 @@ defmodule Scraper.Application do
     Supervisor.start_link(children, opts)
   end
 
-  defp producer_consumer_spec(id: id) do
+  defp producer_consumer_spec(id: id, partition: partition) do
     name = "online_page_producer_consumer_#{id}"
 
     %{
       id: name,
-      start: {Scraper.OnlinePageProducerConsumer, :start_link, [name]}
+      start: {Scraper.OnlinePageProducerConsumer, :start_link, [name, partition]}
     }
   end
 end

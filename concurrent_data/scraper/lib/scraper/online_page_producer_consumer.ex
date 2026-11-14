@@ -8,8 +8,8 @@ defmodule Scraper.OnlinePageProducerConsumer do
     {:via, Registry, {ProducerConsumerRegistry, id}}
   end
 
-  def start_link(id) do
-    initial_state = []
+  def start_link(id, partition) do
+    initial_state = [id: id, partition: partition]
     GenStage.start_link(__MODULE__, initial_state, name: via(id))
   end
 
@@ -17,13 +17,16 @@ defmodule Scraper.OnlinePageProducerConsumer do
   def init(initial_state) do
     Logger.info("OnlinePageProducerConsumer init")
 
-    subscription = [{PageProducer, min_demand: 0, max_demand: 1}]
+    subscription = [
+      {PageProducer, min_demand: 0, max_demand: 1, partition: initial_state[:partition]}
+    ]
+
     {:producer_consumer, initial_state, subscribe_to: subscription}
   end
 
   @impl GenStage
   def handle_events(events, _from, state) do
-    Logger.info("OnlinePageProducerConsumer received #{inspect(events)}")
+    Logger.info("OnlinePageProducerConsumer-#{inspect(self())} received #{inspect(events)}")
 
     events = Enum.filter(events, &Scraper.Work.online?/1)
     {:noreply, events, state}

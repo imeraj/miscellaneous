@@ -16,7 +16,18 @@ defmodule Scraper.PageProducer do
   def init(initial_state) do
     Logger.info("PageProducer init")
 
-    {:producer, initial_state}
+    partitions = [:a, :b]
+
+    hash = fn event ->
+      {event, Enum.at(partitions, :erlang.phash2(event, length(partitions)))}
+    end
+
+    opts = [
+      partitions: partitions,
+      hash: hash
+    ]
+
+    {:producer, initial_state, dispatcher: {GenStage.PartitionDispatcher, opts}}
   end
 
   @impl GenStage
