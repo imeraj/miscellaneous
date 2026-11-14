@@ -2,7 +2,6 @@ defmodule Scraper.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-  alias Scraper.PageConsumer
 
   use Application
 
@@ -10,8 +9,7 @@ defmodule Scraper.Application do
   def start(_type, _args) do
     children = [
       Scraper.PageProducer,
-      Supervisor.child_spec(PageConsumer, id: :consumer_a),
-      Supervisor.child_spec(PageConsumer, id: :consumer_b)
+      Scraper.PageConsumerSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
