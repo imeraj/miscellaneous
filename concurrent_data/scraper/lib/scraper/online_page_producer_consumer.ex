@@ -4,9 +4,13 @@ defmodule Scraper.OnlinePageProducerConsumer do
 
   alias Scraper.PageProducer
 
-  def start_link(_args) do
+  def via(id) do
+    {:via, Registry, {ProducerConsumerRegistry, id}}
+  end
+
+  def start_link(id) do
     initial_state = []
-    GenStage.start_link(__MODULE__, initial_state, name: __MODULE__)
+    GenStage.start_link(__MODULE__, initial_state, name: via(id))
   end
 
   @impl GenStage

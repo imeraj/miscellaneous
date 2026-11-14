@@ -23,7 +23,8 @@ defmodule Scraper.PageConsumerSupervisor do
     opts = [
       strategy: :one_for_one,
       subscribe_to: [
-        {OnlinePageProducerConsumer, max_demand: 2}
+        {OnlinePageProducerConsumer.via("online_page_producer_consumer_1"), []},
+        {OnlinePageProducerConsumer.via("online_page_producer_consumer_2"), []}
       ]
     ]
 
