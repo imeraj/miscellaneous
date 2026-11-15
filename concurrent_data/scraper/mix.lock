@@ -1,3 +1,6 @@
 %{
+  "broadway": {:hex, :broadway, "1.3.1", "5c93dcfa29e1b22241cee82985b1588ce9c0616e8e42ff9f6f57f9cca3f5c623", [:mix], [{:gen_stage, "~> 1.0", [hex: :gen_stage, repo: "hexpm", optional: false]}, {:nimble_options, "~> 0.3.7 or ~> 0.4 or ~> 1.0", [hex: :nimble_options, repo: "hexpm", optional: false]}, {:telemetry, "~> 0.4.3 or ~> 1.0", [hex: :telemetry, repo: "hexpm", optional: false]}], "hexpm", "68c953a6b5ab1faa62655b5390226666287b604630e6e96bb57f1db66ddc2f4e"},
   "gen_stage": {:hex, :gen_stage, "1.3.2", "7c77e5d1e97de2c6c2f78f306f463bca64bf2f4c3cdd606affc0100b89743b7b", [:mix], [], "hexpm", "0ffae547fa777b3ed889a6b9e1e64566217413d018cabd825f786e843ffe63e7"},
+  "nimble_options": {:hex, :nimble_options, "1.2.0", "73e5c5fecb08e59f390e0f59c2320b585d72470dbdd9230a469e06881b9dd4a8", [:mix], [], "hexpm", "3a784a75ef9e407619c8c9e98239b1acd29216deb737044a8c1063e2671ce6d9"},
+  "telemetry": {:hex, :telemetry, "1.4.2", "a0cb522801dffb1c49fe6e30561badffc7b6d0e180db1300df759faa22062855", [:rebar3], [], "hexpm", "928f6495066506077862c0d1646609eed891a4326bee3126ba54b60af61febb1"},
 }

@@ -8,11 +8,12 @@ defmodule Scraper.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      {Registry, keys: :unique, name: ProducerConsumerRegistry},
-      Scraper.PageProducer,
-      producer_consumer_spec(id: 1, partition: :a),
-      producer_consumer_spec(id: 2, partition: :b),
-      Scraper.PageConsumerSupervisor
+      #  {Registry, keys: :unique, name: ProducerConsumerRegistry},
+      #  Scraper.PageProducer,
+      #  producer_consumer_spec(id: 1, partition: :a),
+      #  producer_consumer_spec(id: 2, partition: :b),
+      #  Scraper.PageConsumerSupervisor
+      Scraper.ScrapingPipeline
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

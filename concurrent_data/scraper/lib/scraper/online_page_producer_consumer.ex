@@ -1,4 +1,7 @@
 defmodule Scraper.OnlinePageProducerConsumer do
+  @moduledoc """
+  This is unused for using broadway instead
+  """
   use GenStage
   require Logger
 

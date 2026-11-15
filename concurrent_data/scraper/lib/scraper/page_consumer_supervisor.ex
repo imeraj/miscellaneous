@@ -1,4 +1,7 @@
 defmodule Scraper.PageConsumerSupervisor do
+  @moduledoc """
+  This is unused for using broadway instead
+  """
   use ConsumerSupervisor
   require Logger
 
