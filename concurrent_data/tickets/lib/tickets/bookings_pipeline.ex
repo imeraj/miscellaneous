@@ -90,7 +90,11 @@ defmodule Tickets.BookingsPipeline do
 
     messages
     |> Ticket.insert_all_tickets()
-    |> Enum.each(fn %{data: %{user: user}} -> Ticket.send_email(user) end)
+    |> Enum.each(fn message ->
+      channel = message.metadata.amqp_channel
+      payload = "email,#{message.data.user.email}"
+      AMQP.Basic.publish(channel, "", "notifications_queue", payload)
+    end)
 
     messages
   end

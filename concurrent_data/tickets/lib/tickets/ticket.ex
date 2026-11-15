@@ -7,7 +7,7 @@ defmodule Tickets.Ticket do
 
   def tickets_available?("cinema") do
     Process.sleep(Enum.random(100..200))
-    false
+    true
   end
 
   def tickets_available?(_event) do
