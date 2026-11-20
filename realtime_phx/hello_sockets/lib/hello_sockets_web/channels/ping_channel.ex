@@ -1,6 +1,8 @@
 defmodule HelloSocketsWeb.PingChannel do
   use HelloSocketsWeb, :channel
 
+  intercept ["request_ping"]
+
   @impl true
   def join("ping:lobby", payload, socket) do
     if authorized?(payload) do
@@ -13,8 +15,18 @@ defmodule HelloSocketsWeb.PingChannel do
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
   @impl true
+  def handle_in("ping", %{"ack_phrase" => ack_phrase}, socket) do
+    {:reply, {:ok, %{ping: ack_phrase}}, socket}
+  end
+
+  @impl true
   def handle_in("ping", _payload, socket) do
     {:reply, {:ok, %{ping: "pong"}}, socket}
+  end
+
+  @impl true
+  def handle_in("ding", _payload, socket) do
+    {:stop, :shutdown, {:ok, %{msg: "shutting down"}}, socket}
   end
 
   # It is also common to receive messages from the client and
@@ -22,6 +34,12 @@ defmodule HelloSocketsWeb.PingChannel do
   @impl true
   def handle_in("shout", payload, socket) do
     broadcast(socket, "shout", payload)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_out("request_ping", payload, socket) do
+    push(socket, "send_ping", Map.put(payload, "from_node", Node.self()))
     {:noreply, socket}
   end
 
