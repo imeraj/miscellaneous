@@ -14,14 +14,20 @@ defmodule HelloSocketsWeb.PingChannel do
 
   # Channels can be used in a request/response fashion
   # by sending replies to requests from the client
-  @impl true
-  def handle_in("ping", %{"ack_phrase" => ack_phrase}, socket) do
-    {:reply, {:ok, %{ping: ack_phrase}}, socket}
-  end
 
   @impl true
   def handle_in("ping", _payload, socket) do
     {:reply, {:ok, %{ping: "pong"}}, socket}
+  end
+
+  @impl true
+  def handle_in("pong", %{"error" => true}, socket) do
+    {:reply, {:error, %{reasons: "You asked for this!"}}, socket}
+  end
+
+  @impl true
+  def handle_in("pong", _payload, socket) do
+    {:noreply, socket}
   end
 
   @impl true

@@ -20,4 +20,23 @@ channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 
+console.log("send ping")
+channel.push("ping")
+  .receive("ok", resp => { console.log("receive", resp.ping) })
+
+console.log("send pong")
+channel.push("pong") 
+  .receive("ok", resp => { console.log("won't happen") })
+  .receive("error", resp => {console.error("won't happen yet")})
+  .receive("timeout", resp => {console.error("pong message timeout", resp)})
+
+channel.push("pong", {error: true})
+  .receive("error", resp => {console.log("pong error", resp)})
+  
+channel.on("send_ping", (payload) => {
+  console.log("ping requested", payload)
+  channel.push("ping")
+    .receive("ok", resp => {console.log("ping:", resp.ping)})
+})  
+
 export default socket
