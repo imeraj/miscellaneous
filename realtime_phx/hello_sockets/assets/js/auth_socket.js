@@ -10,14 +10,12 @@ import {Socket} from "phoenix"
 //   MIX_ENV=dev mix run -e 'IO.puts Phoenix.Token.sign(HelloSocketsWeb.Endpoint, "salt identifier", 1)'
 //
 // In a real app, have your auth layer provide the token (e.g. window.userToken).
-const token = "SFMyNTY.g2gDYQFuBgCQ6ikDogFiAAFRgA.Vo4mEve8i0J11BQ5si5Wa_RlDzwKZWhptFuPIvDNeUw"
-
-let socket = new Socket("/socket", {params: {token: token}})
+let socket = new Socket("/socket", {params: {token: window.authToken}})
 socket.connect()
 
 // Join the lobby channel. The auth token travels with the socket connection,
 // so the channel join payload can stay empty.
-let channel = socket.channel("ping:lobby", {})
+let channel = socket.channel("ping:1", {})
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.error("Unable to join", resp) })

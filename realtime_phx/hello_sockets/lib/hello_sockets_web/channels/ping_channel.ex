@@ -4,8 +4,8 @@ defmodule HelloSocketsWeb.PingChannel do
   intercept ["request_ping"]
 
   @impl true
-  def join("ping:lobby", payload, socket) do
-    if authorized?(payload) do
+  def join("ping:" <> req_user_id, _payload, %{assigns: %{user_id: user_id}} = socket) do
+    if req_user_id == to_string(user_id) do
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
