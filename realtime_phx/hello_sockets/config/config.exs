@@ -19,7 +19,8 @@ config :hello_sockets, HelloSocketsWeb.Endpoint,
     layout: false
   ],
   pubsub_server: HelloSockets.PubSub,
-  live_view: [signing_salt: "N+bfsf21"]
+  live_view: [signing_salt: "N+bfsf21"],
+  secret_key_base: "1cX5ReUdcnyCNFAyrqxhI9jJSghIHWQ93RAoHM7cgh74sjf9FHhCimV4n+sY9IDW"
 
 # Configure LiveView
 config :phoenix_live_view,

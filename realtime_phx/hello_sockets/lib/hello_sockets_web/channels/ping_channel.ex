@@ -50,7 +50,6 @@ defmodule HelloSocketsWeb.PingChannel do
   end
 
   # Add authorization logic here as required.
-  defp authorized?(_payload) do
-    true
-  end
+  defp authorized?(payload) when is_map(payload), do: true
+  defp authorized?(_payload), do: false
 end

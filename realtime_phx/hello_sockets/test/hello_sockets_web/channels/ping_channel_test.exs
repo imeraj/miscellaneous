@@ -12,7 +12,7 @@ defmodule HelloSocketsWeb.PingChannelTest do
 
   test "ping replies with status ok", %{socket: socket} do
     ref = push(socket, "ping", %{"hello" => "there"})
-    assert_reply ref, :ok, %{"hello" => "there"}
+    assert_reply ref, :ok, %{ping: "pong"}
   end
 
   test "shout broadcasts to ping:lobby", %{socket: socket} do

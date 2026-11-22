@@ -21,7 +21,7 @@
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.
 import {Socket} from "phoenix"
-import "./user_socket.js"
+import "./auth_socket.js"
 
 import {LiveSocket} from "phoenix_live_view"
 import {hooks as colocatedHooks} from "phoenix-colocated/hello_sockets"
