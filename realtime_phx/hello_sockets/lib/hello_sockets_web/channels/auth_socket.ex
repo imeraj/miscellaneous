@@ -11,7 +11,7 @@ defmodule HelloSocketsWeb.AuthSocket do
   ## Channels
 
   channel("ping:*", HelloSocketsWeb.PingChannel)
-  channel("tracked", HelloSocketsWeb.TrackedChannel)
+  channel("recurring", HelloSocketsWeb.RecurringChannel)
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -29,7 +29,7 @@ defmodule HelloSocketsWeb.AuthSocket do
   # performing token verification on connect.
   @impl true
   def connect(%{"token" => token}, socket) do
-    case verify(token) do
+    case verify(token, socket) do
       {:ok, user_id} ->
         {:ok, assign(socket, :user_id, user_id)}
 
@@ -61,7 +61,7 @@ defmodule HelloSocketsWeb.AuthSocket do
   @token_salt "salt identifier"
   @one_day 86400
 
-  defp verify(token) do
-    Phoenix.Token.verify(HelloSocketsWeb.Endpoint, @token_salt, token, max_age: @one_day)
+  defp verify(token, socket) do
+    Phoenix.Token.verify(socket, @token_salt, token, max_age: @one_day)
   end
 end

@@ -10,33 +10,15 @@ import {Socket} from "phoenix"
 //   MIX_ENV=dev mix run -e 'IO.puts Phoenix.Token.sign(HelloSocketsWeb.Endpoint, "salt identifier", 1)'
 //
 // In a real app, have your auth layer provide the token (e.g. window.userToken).
-let socket = new Socket("/socket", {params: {token: window.authToken}})
+let socket = new Socket("/auth_socket", {params: {token: window.authToken}})
 socket.connect()
 
-// Join the lobby channel. The auth token travels with the socket connection,
-// so the channel join payload can stay empty.
-let channel = socket.channel("ping:1", {})
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.error("Unable to join", resp) })
+let recurringChannel = socket.channel("recurring", {})
 
-console.log("send ping")
-channel.push("ping")
-  .receive("ok", resp => { console.log("receive", resp.ping) })
-
-console.log("send pong")
-channel.push("pong")
-  .receive("ok", resp => { console.error("won't happen") })
-  .receive("error", resp => { console.error("won't happen yet") })
-  .receive("timeout", resp => { console.error("pong message timeout", resp) })
-
-channel.push("pong", {error: true})
-  .receive("error", resp => { console.error("pong error", resp) })
-
-channel.on("send_ping", (payload) => {
-  console.log("ping requested", payload)
-  channel.push("ping")
-    .receive("ok", resp => { console.log("ping:", resp.ping) })
+recurringChannel.on("new_token", (payload) => {
+  console.log("received new auth token", payload)  
 })
+
+recurringChannel.join()
 
 export default socket

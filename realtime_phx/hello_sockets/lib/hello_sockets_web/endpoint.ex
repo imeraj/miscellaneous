@@ -16,12 +16,12 @@ defmodule HelloSocketsWeb.Endpoint do
     longpoll: [connect_info: [session: @session_options]]
   )
 
-  # socket("/socket", HelloSocketsWeb.UserSocket,
-  #  websocket: true,
-  #  longpoll: false
-  # )
+  socket("/user_socket", HelloSocketsWeb.UserSocket,
+    websocket: true,
+    longpoll: false
+  )
 
-  socket("/socket", HelloSocketsWeb.AuthSocket,
+  socket("/auth_socket", HelloSocketsWeb.AuthSocket,
     websocket: true,
     longpoll: false
   )
