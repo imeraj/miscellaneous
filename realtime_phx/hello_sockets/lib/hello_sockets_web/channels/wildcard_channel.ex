@@ -19,4 +19,9 @@ defmodule HelloSocketsWeb.WildcardChannel do
       _ -> false
     end
   end
+
+  @impl true
+  def handle_in("ping", _payload, socket) do
+    {:reply, {:ok, %{ping: "pong"}}, socket}
+  end
 end
