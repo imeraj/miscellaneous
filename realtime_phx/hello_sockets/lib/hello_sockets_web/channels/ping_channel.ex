@@ -48,8 +48,4 @@ defmodule HelloSocketsWeb.PingChannel do
     push(socket, "send_ping", Map.put(payload, "from_node", Node.self()))
     {:noreply, socket}
   end
-
-  # Add authorization logic here as required.
-  defp authorized?(payload) when is_map(payload), do: true
-  defp authorized?(_payload), do: false
 end
